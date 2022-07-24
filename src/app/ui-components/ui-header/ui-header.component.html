@@ -1,0 +1,161 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+  <div
+    fxLayout="row"
+    fxLayoutAlign="start end"
+    fxLayoutGap="5px"
+    class="header-title"
+    (click)="redirectToProducts()"
+  >
+    <img src="../../../assets/imgs/logo-white.png" />
+    <h1>eStudy</h1>
+  </div>
+  <ng-container *ngIf="useMobileView; else inputField">
+    <div>&nbsp;</div>
+  </ng-container>
+  <div fxLayout="row" fxLayoutGap="30px" class="header-controls">
+    <ng-container *ngIf="!isLoginOrRegister">
+      <ng-container *ngIf="!useMobileView">
+        <button
+          mat-flat-button
+          class="white"
+          [class.glowAnimation]="glowUpAddButton"
+          (click)="createItem()"
+        >
+          Přidat <i class="fas fa-plus"></i>
+        </button>
+      </ng-container>
+      <a
+        ><i class="far fa-user"></i>
+        <div
+          class="header__user-dialog"
+          [class.header__user-dialog-spacer]="loggedUser"
+        >
+          <ng-container *ngIf="loggedUser; else userNotLogged">
+            <div
+              fxLayout="column"
+              fxLayoutAlign="center center"
+              fxLayoutGap="10px"
+            >
+              <div
+                class="header__user-dialog__avatar"
+                fxLayout="column"
+                fxLayoutAlign="center center"
+              >
+                {{ loggedUser.username.slice(0, 2) }}
+              </div>
+              <h2>{{ loggedUser.username }}</h2>
+            </div>
+            <div
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+              fxLayoutGap="20px"
+            >
+              <button mat-flat-button class="white" (click)="editProfile()">
+                Detail profilu
+              </button>
+              <button mat-flat-button color="primary" (click)="logoutUser()">
+                Odhlásit se
+              </button>
+            </div>
+          </ng-container>
+        </div></a
+      >
+      <ng-container *ngIf="loggedUser">
+        <a (click)="redirectToFavouriteProducts()"
+          ><i class="far fa-heart"></i>
+          <div
+            [@showHide]="favouriteItems?.length > 0 ? 'show' : 'hide'"
+            class="length-circle"
+            fxLayout="row"
+            fxLayoutAlign="center center"
+          >
+            <ng-container *ngIf="favouriteItems?.length > 0">{{
+              favouriteItems.length
+            }}</ng-container>
+          </div></a
+        >
+        <a>
+          <i class="far fa-bell"></i>
+          <div
+            [@showHide]="notifications?.length > 0 ? 'show' : 'hide'"
+            class="length-circle"
+            fxLayout="row"
+            fxLayoutAlign="center center"
+          >
+            <ng-container *ngIf="notifications?.length > 0">{{
+              notifications.length
+            }}</ng-container>
+          </div>
+          <div class="header__notifications-dialog">
+            <ng-container
+              *ngIf="notifications.length > 0; else noNotifications"
+            >
+              <div
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                *ngFor="let notification of notifications; let i = index"
+              >
+                <i
+                  ngClass="{{ icons[notification.type.toLowerCase()] }}  {{
+                    notification.type.toLowerCase()
+                  }}"
+                ></i>
+                <div fxFlex="0 1 80%">{{ notification.text }}</div>
+                <i class="fas fa-times" (click)="deleteNotification(i)"></i>
+              </div>
+            </ng-container>
+          </div>
+        </a>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+<div *ngIf="useMobileView && form" class="header-second">
+  <ng-container [ngTemplateOutlet]="inputField"></ng-container>
+</div>
+<!-- Announcement
+  <div class="announcement-bar">
+  <div>
+    <b>Upozornění</b>, restartování aplikace proběhne ve středu 8.6.2022, budou
+    smazány veškeré účty a přidané položky.
+  </div>
+</div>
+-->
+
+<ng-template #userNotLogged>
+  <div>&nbsp;</div>
+  <h2>Nejste přihlášeni!</h2>
+  <button mat-flat-button color="primary" (click)="redirectToLogin()">
+    Přihlásit se
+  </button>
+</ng-template>
+
+<ng-template #inputField>
+  <form
+    *ngIf="form"
+    [formGroup]="form"
+    fxFlex="1 1 60%"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    [class.logged-spacer]="!loggedUser && !useMobileView"
+  >
+    <div class="header__search-field">
+      <input
+        formControlName="search"
+        maxlength="70"
+        (focus)="toggleExpandInput()"
+        (focusout)="toggleExpandInput()"
+        [className]="
+          inputIsExpanded
+            ? 'header__search-field--expand'
+            : 'header__search-field--collapse'
+        "
+      />
+      <i class="fas fa-search"></i>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #noNotifications>
+  <h2>Ve schránce nemáte žádné zprávy</h2>
+</ng-template>

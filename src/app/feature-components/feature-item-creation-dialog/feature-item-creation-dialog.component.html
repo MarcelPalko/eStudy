@@ -1,0 +1,222 @@
+<div class="dialog" fxLayout="column" fxLayoutAlign="space-between stretch">
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <div>&nbsp;</div>
+    <h1 mat-dialog-title>
+      {{ isEditMode ? "UPRAVIT POLOŽKU" : "VYTVOŘIT NOVOU POLOŽKU" }}
+    </h1>
+    <div class="header__close-button" (click)="exitDialog()">
+      <i class="fas fa-times"></i>
+    </div>
+  </div>
+  <div
+    mat-dialog-content
+    class="content"
+    fxLayout="row"
+    [fxLayoutAlign]="step === 1 ? 'start start' : 'space-evenly start'"
+  >
+    <ng-container [ngSwitch]="step">
+      <ng-container *ngSwitchCase="1">
+        <div
+          [formGroup]="form"
+          fxLayout="column"
+          [fxFlex]="isEditMode || useMobileView ? '1 1 100%' : '1 1 48%'"
+        >
+          <mat-form-field>
+            <mat-label>Název produktu</mat-label>
+            <input matInput required formControlName="title" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Krátký popis produktu</mat-label>
+            <input matInput required formControlName="description" />
+            <mat-hint>Popisek se zobrazí na detailu stránky</mat-hint>
+          </mat-form-field>
+
+          <div
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            fxLayoutGap="20px"
+            fxLayoutGap.xs="10px"
+          >
+            <mat-form-field
+              fxFlex="0 1 65%"
+              fxFlex.xs="0 1 45%"
+              class="categories"
+            >
+              <mat-label>Kategorie</mat-label>
+              <input
+                matInput
+                autocomplete="off"
+                formControlName="categories"
+                (keydown.enter)="addCategory()"
+              />
+              <div
+                *ngIf="form.controls.categories.value.length > 0"
+                fxLayout="column"
+                fxLayoutGap="10px"
+                class="categories__search"
+              >
+                <mat-card
+                  *ngFor="let category of filteredCategories"
+                  (click)="addCategory(category)"
+                >
+                  {{ category }}
+                </mat-card>
+              </div>
+            </mat-form-field>
+
+            <button mat-flat-button class="black" (click)="addCategory()">
+              Přidat kategorii
+            </button>
+          </div>
+          <div fxLayout="row wrap" fxLayoutGap="10px">
+            <div *ngFor="let category of categories; let i = index">
+              <mat-chip
+                color="primary"
+                class="black"
+                (click)="removeCategory(i)"
+                >{{ category }} <i class="fas fa-times"></i
+              ></mat-chip>
+            </div>
+          </div>
+        </div>
+        <div class="divider" fxFlex="0 0 4%"></div>
+        <ng-container
+          *ngIf="!isEditMode && !useMobileView"
+          [ngTemplateOutlet]="imageForm"
+        ></ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="2">
+        <ng-container
+          *ngIf="useMobileView"
+          [ngTemplateOutlet]="imageForm"
+        ></ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="3">
+        <ng-container *ngIf="useMobileView; else cardPreview">
+          <div
+            fxLayout.xs="column-reverse"
+            fxLayoutAlign.xs="start center"
+            class="card-preview"
+          >
+            <ng-container [ngTemplateOutlet]="cardPreview"></ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+  <div
+    mat-dialog-actions
+    class="footer"
+    fxLayout="row"
+    fxLayoutAlign="end center"
+    fxLayoutGap="10px"
+  >
+    <ng-container *ngIf="step !== 1 && !isUploading">
+      <button mat-flat-button class="black" (click)="previousStep()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="step === 3 || isEditMode">
+      <button
+        mat-flat-button
+        class="save-button black"
+        [class.uploaded]="uploaded"
+        (click)="isEditMode ? updateProduct() : uploadProduct()"
+        [@expand]="isUploading ? 'OUT' : 'IN'"
+      >
+        <div *ngIf="!isUploading">Uložit</div>
+        <i *ngIf="isUploading && !uploaded" class="fas fa-spinner fa-spin"></i>
+        <i *ngIf="uploaded" class="fas fa-check"></i>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="step !== 3 && !isEditMode">
+      <button
+        mat-flat-button
+        [disabled]="form.errors?.invalid"
+        class="black"
+        (click)="nextStep()"
+      >
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #imageForm>
+  <div
+    class="image-form"
+    [fxFlex]="isEditMode || useMobileView ? '1 1 100%' : '1 1 48%'"
+    fxLayout="column"
+    fxLayoutGap="25px"
+  >
+    <div
+      class="image-form__field"
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="10px"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+    >
+      <i class="fas fa-images"></i>
+      <div>
+        Kliknutím nebo přetáhnutím vložíte obrázek nebo obrázky (.jpg, .png)
+      </div>
+      <input type="file" (change)="onDrop($event)" multiple />
+    </div>
+    <div fxLayout="column" fxLayoutGap="10px">
+      <div
+        *ngFor="let image of images; let i = index"
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        class="image-form__image"
+      >
+        <div>{{ image.data.name }}</div>
+        <div (click)="removeImage(i)"><i class="fas fa-times"></i></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #cardPreview>
+  <div
+    fxLayout="row wrap"
+    fxLayout.xs="row"
+    fxLayoutGap="20px"
+    class="image-list"
+  >
+    <div *ngFor="let image of images; let i = index">
+      <img
+        [class.selected]="selectedImage === i"
+        [src]="image.url"
+        width="150px"
+        (click)="setMainImage(i)"
+      />
+    </div>
+  </div>
+  <mat-card fxLayout="column" fxLayoutAlign="space-between center" class="card">
+    <img [src]="images[selectedImage].url" />
+    <div>
+      {{
+        useMobileView && this.form.controls.title.value.length > 15
+          ? this.form.controls.title.value.slice(0, 15) + "..."
+          : this.form.controls.title.value
+      }}
+    </div>
+    <div>{{ actualDate | date: "shortDate" }}</div>
+    <div class="card__categories" fxLayout="column" fxLayoutAlign="end stretch">
+      <small>Kategorie:</small>
+      <mat-chip-list fxLayout.xs="row">
+        <mat-chip color="primary">
+          {{ categories[0] }}
+        </mat-chip>
+        <ng-container *ngIf="categories.length > 1">
+          <mat-chip color="primary"
+            >{{ categories.length - 1 }} DALŠÍ...</mat-chip
+          >
+        </ng-container>
+      </mat-chip-list>
+    </div>
+  </mat-card>
+</ng-template>

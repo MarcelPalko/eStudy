@@ -1,0 +1,93 @@
+<div fxLayout="column" class="main-content">
+  <estudy-ui-header></estudy-ui-header>
+  <div class="body" fxLayout="column" fxLayoutGap="20px">
+    <div
+      class="title"
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="5px"
+    >
+      <h1>Tvé oblíbené produkty <i class="fas fa-heart"></i></h1>
+      <h1><b>Kliknutím na produkt</b> si zobrazíte podrobnosti</h1>
+    </div>
+    <ng-container *ngIf="!isLoading; else ghostLoading">
+      <ng-container *ngIf="user.favouriteProducts.length > 0; else noProducts">
+        <ng-container
+          *ngFor="let product of user.favouriteProducts; let i = index"
+        >
+          <mat-card
+            class="favourite-item"
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            (click)="showProductDetail(i)"
+          >
+            <div
+              fxFlex="1 1 80%"
+              fxLayout="row"
+              fxLayoutAlign="start center"
+              fxLayoutGap="30px"
+            >
+              <img [src]="product.images[0]" width="90px" />
+              <div class="favourite-item__title">
+                <b>{{ product.title }}</b> - {{ product.description }}
+              </div>
+            </div>
+            <div>&nbsp;</div>
+            <div
+              class="favourite-item__delete-button"
+              (click)="removeProduct(i)"
+            >
+              <i class="fas fa-times"></i>
+            </div>
+          </mat-card>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+
+    <div class="notifications" fxLayout="column-reverse" fxLayoutGap="10px">
+      <mat-card
+        class="return-card"
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        [@fadeOut]
+        *ngFor="let notification of productsToRemove; let i = index"
+      >
+        <i class="fas fa-info-circle"></i>
+        <div fxFlex="1 1 280px" class="return-card__text">
+          Chcete vrátit {{ notification.title }} zpět ?
+        </div>
+        <button mat-flat-button (click)="returnProductBack(i)">Vrátit</button>
+      </mat-card>
+    </div>
+  </div>
+  <estudy-ui-footer></estudy-ui-footer>
+</div>
+
+<ng-template #ghostLoading>
+  <ng-container *ngFor="let index of cycleFor(4)">
+    <div
+      class="favourite-item__ghost-loading"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+    >
+      <div
+        fxFlex="1 1 80%"
+        fxFlex.xs="1 1 70%"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="30px"
+      >
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+      </div>
+      <div fxFlex="1 1 3%" fxFlex.xs="1 1 9%">&nbsp;</div>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #noProducts>
+  <h1 class="no-products">
+    Zatím nemáte <b>žádné produkty</b> v seznamu oblíbených,
+    <b (click)="returnToProducts()">vrátit se a pokračovat v heldání</b>
+  </h1>
+</ng-template>

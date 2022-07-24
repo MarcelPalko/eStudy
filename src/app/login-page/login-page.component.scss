@@ -1,0 +1,114 @@
+@import "../../assets/styles/variables";
+
+.main-content {
+  min-height: 100vh;
+  min-width: 100%;
+}
+
+::ng-deep .mat-checkbox-ripple .mat-ripple-element {
+  background-color: black !important;
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: black !important;
+}
+
+.login-form {
+  flex: 1;
+
+  &__title {
+    width: 90%;
+    text-align: center;
+    padding: 5px;
+
+    background-color: $primary-color;
+    color: #fff;
+  }
+
+  .icon {
+    font-size: 14px;
+
+    &-green {
+      color: #27b89b;
+    }
+
+    &-warn {
+      color: #d50000;
+    }
+  }
+
+  mat-icon {
+    width: inherit !important;
+    height: inherit !important;
+  }
+
+  &__error {
+    text-align: center;
+  }
+
+  &__footer {
+    width: 95%;
+    font-size: 12px;
+    margin-top: 20px;
+
+    .button-divider {
+      position: relative;
+      text-align: center;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: $primary-color;
+      }
+
+      &::before {
+        left: 0;
+      }
+
+      &::after {
+        right: 0;
+      }
+    }
+
+    button {
+      text-align: center;
+
+      background-color: $primary-color;
+      color: #fff;
+    }
+
+    button:last-child {
+      background-color: #fff;
+      color: $primary-color;
+    }
+  }
+
+  mat-card {
+    height: 500px;
+    width: 400px;
+    padding: 20px;
+
+    color: $primary-color;
+
+    form {
+      width: 90%;
+      height: 100%;
+      margin-top: 20px;
+    }
+
+    .return-link {
+      text-align: center;
+
+      a {
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+      }
+    }
+  }
+}

@@ -1,0 +1,317 @@
+<div fxLayout="column" class="main-content">
+  <estudy-ui-header></estudy-ui-header>
+  <div
+    class="body"
+    fxLayout="row"
+    fxLayoutAlign="center start"
+    fxLayout.lt-lg="column"
+    fxLayoutAlign.lt-lg="start center"
+  >
+    <div fxLayout="row" fxLayout.lt-lg="column-reverse" fxFlex="0 0 50%">
+      <ng-container *ngIf="loaded; else ghostLoadingImages">
+        <div
+          class="image-list"
+          fxLayout="column"
+          fxLayout.lt-lg="row"
+          fxLayoutAlign="start start"
+          fxLayoutGap="20px"
+        >
+          <img
+            *ngFor="let image of product.images; let i = index"
+            width="150"
+            loading="lazy"
+            [src]="image"
+            (click)="showImage(i)"
+            (load)="onImageLoad($event)"
+          />
+        </div>
+        <div
+          class="big-image"
+          [style.background-image]="
+            'url(' + product.images[selectedImage] + ')'
+          "
+        ></div>
+        <ng-container *ngIf="useMobileView" [ngTemplateOutlet]="productTitle">
+        </ng-container>
+      </ng-container>
+    </div>
+    <div
+      fxLayout="column"
+      fxLayoutGap="45px"
+      fxLayoutGap.lt-lg="20px"
+      fxFlex="0 0 50%"
+    >
+      <ng-container *ngIf="loaded; else ghostLoadingProduct">
+        <div
+          fxLayout="row"
+          fxLayoutAlign="space-between start"
+          fxLayout.lt-lg="column"
+        >
+          <ng-container
+            *ngIf="!useMobileView"
+            [ngTemplateOutlet]="productTitle"
+          ></ng-container>
+          <div class="statuses" fxLayout="column" fxLayoutGap="10px">
+            <small>Stav produktu:</small>
+            <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+              <ng-container *ngFor="let status of getStatuses(); let i = index">
+                <button
+                  mat-flat-button
+                  disableRipple
+                  [matTooltip]="status.tooltip"
+                  matTooltipPosition="below"
+                  class="status {{ status.class }}"
+                  [class.status--selected]="
+                    loggedUser &&
+                    loggedUser._id === product.userId &&
+                    i === selectedStatus
+                  "
+                  (click)="setStatusToProduct(i)"
+                >
+                  <i [class]="status.icon"></i>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="chat" fxLayout="column" fxLayoutAlign="space-between start">
+          <div
+            *ngIf="
+              loggedUser &&
+              loggedUser._id !== author._id &&
+              product.status === 'SOLD' &&
+              chats[activeChat]?.messages?.length <= 0
+            "
+            class="chat__wrapper"
+            fxLayout="row"
+            fxLayoutAlign="center center"
+          >
+            <div>
+              Produkt je označen jako <b>Prodaný</b>,<br />
+              přidejte si produkt do oblíbených a vyčkejte zda bude ještě
+              dostupný
+            </div>
+          </div>
+          <ng-container
+            *ngIf="
+              chatUsers.length > 0 &&
+              chats.length > 0 &&
+              loggedUser &&
+              loggedUser._id === author._id
+            "
+          >
+            <div
+              class="users-chat"
+              fxLayout="row"
+              fxLayoutAlign="start center"
+              fxLayoutGap="10px"
+            >
+              <div
+                class="avatar-mini"
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                [matTooltip]="chatUser.username"
+                matTooltipPosition="above"
+                *ngFor="let chatUser of chatUsers; let i = index"
+                (click)="selectChat(chatUser)"
+                [class.avatar-mini--selected]="activeChat === i"
+              >
+                {{ chatUser.username.slice(0, 2) }}
+                <ng-container *ngIf="getUnreadMessages(i) > 0 && author">
+                  <div
+                    class="length-circle"
+                    fxLayout="row"
+                    fxLayoutAlign="center center"
+                  >
+                    {{ getUnreadMessages(i) }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="showScrollButton">
+            <mat-card class="scroll-bottom-button" (click)="scrollToBottom()">
+              <i class="fas fa-arrow-alt-circle-down"></i>
+            </mat-card>
+          </ng-container>
+          <div
+            class="chat__messages"
+            fxLayout="column"
+            fxLayoutAlign="end start"
+            fxLayoutGap="20px"
+            (scroll)="showScrollToBottom($event.target)"
+            (load)="scrollToBottom()"
+            #chatContainer
+          >
+            <ng-container
+              *ngIf="chats[activeChat]?.messages?.length > 0; else noChat"
+            >
+              <div
+                *ngFor="let message of chats[activeChat].messages"
+                [fxLayout]="
+                  loggedUser._id === message.authorId ? 'row-reverse' : 'row'
+                "
+                [class.chat__messages--normal]="
+                  loggedUser._id != message.authorId
+                "
+                [class.chat__messages--reverse]="
+                  loggedUser._id === message.authorId
+                "
+                fxLayoutGap="10px"
+              >
+                <div
+                  class="avatar-mini"
+                  fxLayout="column"
+                  fxLayoutAlign="center center"
+                >
+                  {{
+                    message.authorId === author._id
+                      ? author.username.slice(0, 2)
+                      : getUser(message.authorId).username.slice(0, 2)
+                  }}
+                </div>
+                <div fxLayout="column" fxLayoutAlign="start start">
+                  <div
+                    class="chat__message"
+                    fxLayoutAlign="center center"
+                    [innerHTML]="message.text"
+                  ></div>
+                  <small *ngIf="loggedUser._id !== message.authorId">{{
+                    getUser(message.authorId)?.username || author.username
+                  }}</small>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <mat-card
+            fxlayout="row"
+            fxLayoutAlign="space-between center"
+            fxLayoutGap.lt-lg="10px"
+          >
+            <input
+              placeholder="Zpráva"
+              [formControl]="messageField"
+              (keyup.enter)="sendMessage()"
+            />
+            <button
+              mat-flat-button
+              [disabled]="
+                this.messageField.value.length === 0 ||
+                (loggedUser &&
+                  loggedUser._id === author._id &&
+                  chats.length <= 0)
+              "
+              class="black"
+              (click)="sendMessage()"
+            >
+              Poslat <i class="fas fa-paper-plane"></i>
+            </button>
+          </mat-card>
+        </div>
+      </ng-container>
+    </div>
+    <div
+      class="notification-container"
+      fxLayout="row"
+      fxLayoutAlign="start end"
+      fxLayoutGap="20px"
+    >
+      <ng-container
+        *ngIf="statusChanged"
+        [ngTemplateOutlet]="statusChangedNotification"
+      ></ng-container>
+    </div>
+  </div>
+  <estudy-ui-footer></estudy-ui-footer>
+</div>
+
+<ng-template #productTitle>
+  <div class="product-title" fxLayout="column" fxLayoutGap="10px">
+    <h1>
+      {{ product.title }} - {{ product.description }}
+      <ng-container *ngIf="loggedUser && loggedUser._id === product.userId">
+        <sup
+          class="edit-button"
+          (click)="openEditDialog()"
+          matTooltip="Upravit produkt"
+          matTooltipPosition="below"
+          ><i class="fas fa-edit"></i
+        ></sup>
+      </ng-container>
+    </h1>
+    <mat-chip-list>
+      <mat-chip
+        *ngFor="let category of product.categories"
+        class="chip"
+        color="primary"
+      >
+        {{ category }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+</ng-template>
+
+<ng-template #ghostLoadingImages>
+  <div
+    class="image-list image-list--loading"
+    fxLayout="column"
+    fxLayout.lt-lg="row"
+    fxLayoutGap="20px"
+  >
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
+  </div>
+  <div class="big-image big-image--loading"></div>
+
+  <ng-container *ngIf="useMobileView">
+    <div
+      class="product-title--loading"
+      fxLayout.lt-lg="column"
+      fxLayoutGap.lt-lg="10px"
+    >
+      <div>&nbsp;</div>
+      <div fxLayout.lt-lg="row" fxLayoutGap.lt-lg="10px">
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #ghostLoadingProduct>
+  <div class="product-title--loading" fxLayout="column" fxLayoutGap="10px">
+    <div>&nbsp;</div>
+    <div fxLayout="row" fxLayoutGap="10px">
+      <div>&nbsp;</div>
+      <div>&nbsp;</div>
+      <div>&nbsp;</div>
+    </div>
+  </div>
+  <div class="chat--loading"></div>
+</ng-template>
+
+<ng-template #noChat>
+  <div *ngIf="loggedUser && loggedUser._id === author._id && chats.length <= 0">
+    Zatím nemáte žádné zprávy, jakmile někdo zareaguje, chat se vám
+    <b>zpřístupní</b>
+  </div>
+  <div *ngIf="!loggedUser || loggedUser._id !== author._id">
+    Zatím nemáte žádné zprávy, zprávu pošlete po kliknutí na tlačítko
+    <b>Poslat</b>
+  </div>
+</ng-template>
+
+<ng-template #statusChangedNotification>
+  <mat-card
+    class="change-card"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+    [@fadeOutContainer]
+  >
+    <i class="fas fa-check-circle"></i>
+    <div>Stav produktu byl úspěšně změněn</div>
+    <div>&nbsp;</div>
+  </mat-card>
+</ng-template>

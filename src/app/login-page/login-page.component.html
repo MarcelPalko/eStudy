@@ -1,0 +1,165 @@
+<div fxLayout="column" class="main-content">
+  <estudy-ui-header></estudy-ui-header>
+  <div fxLayout="row" fxLayoutAlign="center center" class="login-form">
+    <mat-card fxLayout="column" fxLayoutAlign="space-between center">
+      <h1
+        class="login-form__title"
+        fxLayout="row"
+        fxLayoutAlign="center end"
+        fxLayoutGap="5px"
+      >
+        <img src="../../../assets/imgs/logo-white.png" width="40px" />
+        <div>eStudy</div>
+      </h1>
+
+      <form
+        [formGroup]="form"
+        fxLayout="column"
+        fxLayoutAlign="space-evenly stretch"
+      >
+        <ng-container *ngIf="!isLogin">
+          <mat-form-field>
+            <mat-label>Uživatelské jméno</mat-label>
+            <input
+              matInput
+              autocomplete="off"
+              formControlName="username"
+              (input)="checkUsername($event)"
+            />
+            <mat-error
+              *ngIf="
+                form.controls.username?.invalid &&
+                form.controls.username.value?.length > 0 &&
+                !isLogin
+              "
+              >Toto uživatelské jméno je zabrané, zkuste jiné</mat-error
+            >
+            <mat-icon
+              *ngIf="
+                form.controls.username.value?.length > 0 &&
+                isCheckingProperties['username']
+              "
+              matSuffix
+              class="icon fas fa-spinner fa-spin"
+            ></mat-icon>
+            <mat-icon
+              *ngIf="
+                form.controls.username.value?.length > 0 &&
+                !isCheckingProperties['username'] &&
+                checkedProperties['username']
+              "
+              matSuffix
+              class="icon-green fas fa-check"
+            ></mat-icon>
+            <mat-icon
+              *ngIf="
+                form.controls.username.value?.length > 0 &&
+                !isCheckingProperties['username'] &&
+                !checkedProperties['username']
+              "
+              matSuffix
+              class="icon-warn fas fa-times"
+            ></mat-icon>
+          </mat-form-field>
+        </ng-container>
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            formControlName="email"
+            (input)="checkEmail($event)"
+          />
+          <mat-error
+            *ngIf="
+              form.controls.email?.invalid &&
+              form.controls.email?.value?.length >= 4 &&
+              !isLogin
+            "
+            >Tento email se již používá, zkuste jiný</mat-error
+          >
+          <mat-icon
+            *ngIf="
+              form.controls.email.value?.length > 0 &&
+              isCheckingProperties['email'] &&
+              !isLogin
+            "
+            matSuffix
+            class="icon fas fa-spinner fa-spin"
+          ></mat-icon>
+          <mat-icon
+            *ngIf="
+              form.controls.email.value?.length > 0 &&
+              !isCheckingProperties['email'] &&
+              checkedProperties['email'] &&
+              !isLogin
+            "
+            matSuffix
+            class="icon-green fas fa-check"
+          ></mat-icon>
+          <mat-icon
+            *ngIf="
+              form.controls.email.value?.length > 0 &&
+              !isCheckingProperties['email'] &&
+              !checkedProperties['email'] &&
+              !isLogin
+            "
+            matSuffix
+            class="icon-warn fas fa-times"
+          ></mat-icon>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Heslo</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+        <ng-container *ngIf="!isLogin">
+          <mat-form-field>
+            <mat-label>Zopakuj heslo</mat-label>
+            <input matInput type="password" formControlName="reEnterPassword" />
+            <mat-error *ngIf="form['controls']['reEnterPassword'].invalid"
+              >Hesla se neshodují !</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Třída</mat-label>
+            <input matInput formControlName="class" />
+          </mat-form-field>
+          <mat-checkbox formControlName="gdprCheck" required
+            >Souhlasím se <b>zpracováním osobních údajů</b></mat-checkbox
+          >
+        </ng-container>
+        <mat-error *ngIf="wrongCredentials" class="login-form__error"
+          >Špatné přihlašovací údaje !</mat-error
+        >
+      </form>
+
+      <div
+        class="login-form__footer"
+        fxLayout="column"
+        fxLayoutAlign="start stretch"
+        fxLayoutGap="10px"
+      >
+        <ng-container *ngIf="isLogin">
+          <button mat-flat-button (click)="doActionBasedOnRoute()">
+            Přihlásit
+          </button>
+          <div class="button-divider">Nebo</div>
+        </ng-container>
+
+        <button
+          mat-stroked-button
+          [disabled]="!isLogin && form.invalid"
+          (click)="doActionBasedOnRoute(isLogin)"
+        >
+          Registrovat
+        </button>
+        <ng-container *ngIf="!isLogin">
+          <div class="return-link">
+            Již máte účet ? <a routerLink="/login">Přihlásit se</a>
+          </div>
+        </ng-container>
+      </div>
+    </mat-card>
+  </div>
+  <estudy-ui-footer></estudy-ui-footer>
+</div>

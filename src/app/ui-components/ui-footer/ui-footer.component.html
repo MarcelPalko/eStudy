@@ -1,0 +1,16 @@
+<footer
+  class="footer"
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+  fxLayoutGap="15px"
+>
+  <button mat-flat-button>
+    <div class="footer__version">STAGE v 2.0.6</div>
+  </button>
+  <div class="footer__title">
+    &copy; {{ date | date: "yyyy" }}&nbsp;&nbsp;eStudy |
+    <button mat-flat-button (click)="redirectToAboutPage()">
+      <div class="footer__version">Marcel Palko</div>
+    </button>
+  </div>
+</footer>

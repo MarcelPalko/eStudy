@@ -1,0 +1,328 @@
+<div fxLayout="column" class="main-content">
+  <estudy-ui-header [glowUpAddButton]="glowUpButton"></estudy-ui-header>
+  <div class="body" fxLayout="row" fxLayoutAlign="center stretch">
+    <div
+      class="user"
+      fxFlex="0 1 70%"
+      fxFlex.xs="0 1 100%"
+      fxLayout="column"
+      fxLayoutAlign="start center"
+    >
+      <div class="user__avatar" fxLayoutAlign="center center">
+        {{ user.username.slice(0, 2) }}
+      </div>
+      <h2>{{ user.username }}</h2>
+      <mat-tab-group
+        class="tab-menu"
+        (selectedIndexChange)="tabChanged($event)"
+      >
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="fas fa-solid fa-user"></mat-icon>
+            <div class="tab-menu__title">Profil</div>
+          </ng-template>
+
+          <div
+            class="form"
+            [formGroup]="form"
+            fxLayout="row"
+            fxLayout.xs="column"
+            fxLayoutAlign="start start"
+            fxLayoutGap="11%"
+            fxLayoutGap.xs="10px"
+          >
+            <div
+              fxFlex="0 1 45%"
+              fxLayout="column"
+              fxLayoutAlign="center start"
+              fxLayoutGap="10px"
+            >
+              <mat-form-field>
+                <mat-label>Uživatelské jméno</mat-label>
+                <input
+                  matInput
+                  required
+                  formControlName="username"
+                  (input)="checkUsername($event)"
+                />
+                <mat-error
+                  *ngIf="
+                    form.controls.username?.hasError('invalid') &&
+                    form.controls.username?.value.length !== 0
+                  "
+                  >Toto uživatelské jméno je zabrané, zkuste jiné</mat-error
+                >
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('username') &&
+                    isCheckingProperties['username'] &&
+                    form.controls.username?.value.length !== 0
+                  "
+                  matSuffix
+                  class="icon fas fa-spinner fa-spin"
+                ></mat-icon>
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('username') &&
+                    !isCheckingProperties['username'] &&
+                    checkedProperties['username'] &&
+                    form.controls.username?.value.length !== 0
+                  "
+                  matSuffix
+                  class="icon-green fas fa-check"
+                ></mat-icon>
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('username') &&
+                    !isCheckingProperties['username'] &&
+                    !checkedProperties['username']
+                  "
+                  matSuffix
+                  class="icon-warn fas fa-times"
+                ></mat-icon>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  required
+                  formControlName="email"
+                  (input)="checkEmail($event)"
+                />
+                <mat-error
+                  *ngIf="
+                    form.controls.email?.hasError('invalid') &&
+                    form.controls.email?.value.length !== 0
+                  "
+                  >Tento email již používá jiný uživatel, zvolte dostupný
+                  email</mat-error
+                >
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('email') &&
+                    isCheckingProperties['email'] &&
+                    form.controls.email?.value.length !== 0
+                  "
+                  matSuffix
+                  class="icon fas fa-spinner fa-spin"
+                ></mat-icon>
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('email') &&
+                    !isCheckingProperties['email'] &&
+                    checkedProperties['email'] &&
+                    form.controls.email?.value.length !== 0
+                  "
+                  matSuffix
+                  class="icon-green fas fa-check"
+                ></mat-icon>
+                <mat-icon
+                  *ngIf="
+                    hasPropertyChanged('email') &&
+                    !isCheckingProperties['email'] &&
+                    !checkedProperties['email'] &&
+                    form.controls.email?.value.length == 0
+                  "
+                  matSuffix
+                  class="icon-warn fas fa-times"
+                ></mat-icon>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Třída</mat-label>
+                <input matInput formControlName="class" />
+              </mat-form-field>
+            </div>
+            <div
+              fxFlex="0 0 45%"
+              fxLayout="column"
+              fxLayoutAlign="center start"
+              fxLayoutGap="10px"
+            >
+              <ng-container *ngIf="isPasswordFormVisible">
+                <mat-form-field>
+                  <mat-label>Staré heslo</mat-label>
+                  <input
+                    matInput
+                    required
+                    type="password"
+                    formControlName="oldPassword"
+                    (input)="checkOldPassword($event)"
+                  />
+                  <mat-error
+                    *ngIf="
+                      form.controls.oldPassword?.hasError('invalid') &&
+                      form.controls.oldPassword?.value.length !== 0
+                    "
+                    >Zadané heslo se neshoduje s vašim starým heslem</mat-error
+                  >
+                  <mat-icon
+                    *ngIf="
+                      isCheckingProperties['oldPassword'] &&
+                      form.controls.oldPassword?.value.length !== 0
+                    "
+                    matSuffix
+                    class="icon fas fa-spinner fa-spin"
+                  ></mat-icon>
+                  <mat-icon
+                    *ngIf="
+                      !isCheckingProperties['oldPassword'] &&
+                      checkedProperties['oldPassword'] &&
+                      form.controls.oldPassword?.value.length !== 0
+                    "
+                    matSuffix
+                    class="icon-green fas fa-check"
+                  ></mat-icon>
+                  <mat-icon
+                    *ngIf="
+                      !isCheckingProperties['oldPassword'] &&
+                      !checkedProperties['oldPassword'] &&
+                      form.controls.oldPassword?.value.length !== 0
+                    "
+                    matSuffix
+                    class="icon-warn fas fa-times"
+                  ></mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Nové heslo</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="password"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Heslo znovu</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="reEnterPassword"
+                    required
+                  />
+                  <mat-error *ngIf="form['controls']['reEnterPassword'].invalid"
+                    >Hesla se neshodují !</mat-error
+                  >
+                </mat-form-field>
+              </ng-container>
+            </div>
+          </div>
+          <div
+            class="save-button"
+            fxLayout="row"
+            fxLayoutAlign="end center"
+            fxLayoutGap="20px"
+          >
+            <ng-container
+              *ngIf="!isPasswordFormVisible"
+              [ngTemplateOutlet]="toggleForm"
+            ></ng-container>
+            <ng-container *ngIf="form.controls?.password">
+              <button
+                mat-flat-button
+                class="black"
+                (click)="hidePasswordForm()"
+              >
+                Ponechat heslo
+              </button>
+            </ng-container>
+            <button
+              mat-flat-button
+              class="black"
+              [disabled]="form.invalid || form.pristine || isUpdating"
+              (click)="onSubmit()"
+            >
+              <div *ngIf="!isUpdating">Uložit</div>
+              <i *ngIf="isUpdating" class="fas fa-spinner fa-spin"></i>
+            </button>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="fas fa-solid fa-book"></mat-icon>
+            <div class="tab-menu__title">Moje nabídky</div>
+          </ng-template>
+          <div class="products" fxLayout="column" fxLayoutGap="20px">
+            <ng-container *ngIf="uploadedProducts.length > 0; else noItems">
+              <mat-card
+                class="products__item"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                *ngFor="let product of uploadedProducts; let i = index"
+                (click)="showProductDetail(i)"
+                [@delete]
+              >
+                <div
+                  fxFlex="1 1 80%"
+                  fxLayout="row"
+                  fxLayoutAlign="start center"
+                  fxLayoutGap="30px"
+                >
+                  <img [src]="product.images[0]" width="90px" />
+                  <div class="products__item__title">
+                    <b>{{ product.title }}</b> - {{ product.description }}
+                  </div>
+                </div>
+                <div>&nbsp;</div>
+                <div fxLayout="row" fxLayoutAlign="center center">
+                  <div
+                    class="products__item__edit-button"
+                    (click)="editProduct(i); $event.stopPropagation()"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </div>
+                  <div
+                    class="products__item__delete-button"
+                    (click)="deleteProduct(i); $event.stopPropagation()"
+                  >
+                    <i class="fas fa-times"></i>
+                  </div>
+                </div>
+              </mat-card>
+            </ng-container>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <ng-container
+      *ngIf="updated"
+      [ngTemplateOutlet]="updatedNotification"
+    ></ng-container>
+  </div>
+  <estudy-ui-footer></estudy-ui-footer>
+</div>
+
+<ng-template #toggleForm>
+  <button mat-flat-button class="black" (click)="showPasswordForm()">
+    Změnit heslo
+  </button>
+</ng-template>
+
+<ng-template #updatedNotification>
+  <mat-card
+    class="user__notification"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+    [@fadeOut]
+  >
+    <i class="fas fa-check-circle"></i>
+    <div fxFlex="1 1 80%" class="notification__text">
+      Uživatelské údaje byly úspěšně změněny.
+    </div>
+    <div>&nbsp;</div>
+  </mat-card>
+</ng-template>
+
+<ng-template #noItems>
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <h1 class="no-items-found">
+      <ng-container *ngIf="useMobileView; else pcMessage">
+        Zatím jste nepřidali žádný produkt
+      </ng-container>
+      <ng-template #pcMessage>
+        Zatím jste nepřidali žádný produkt,<br />
+        kliknutím na tlačítko <b>Přidat</b> v hlavním menu jej přidáte
+      </ng-template>
+    </h1>
+  </div>
+</ng-template>

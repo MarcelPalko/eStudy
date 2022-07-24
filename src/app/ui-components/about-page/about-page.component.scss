@@ -1,0 +1,56 @@
+.main-content {
+  min-height: 100vh;
+  max-height: 100vh;
+  min-width: 100%;
+}
+
+.body {
+  height: calc(100vh - 210px);
+  min-height: 100%;
+  padding: 70px 50px;
+  overflow-y: scroll;
+
+  &__quote {
+    margin-bottom: 30px;
+    font-size: 40px;
+    line-height: 42px;
+  }
+
+  h2 {
+    margin-bottom: 60px;
+  }
+
+  &__creator {
+    &-box {
+      h3 {
+        line-height: 23px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  estudy-ui-header {
+    margin-top: 55px;
+  }
+
+  .body {
+    &__quote {
+      margin-bottom: 30px;
+      font-size: 30px;
+      line-height: 32px;
+    }
+
+    h2 {
+      font-size: 15px;
+    }
+
+    &__creator {
+      &-box {
+        img {
+          width: 80%;
+        }
+      }
+    }
+  }
+}
