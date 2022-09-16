@@ -1,0 +1,20 @@
+<div class="dialog" fxLayout="column" fxLayoutAlign="space-between stretch">
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <div>&nbsp;</div>
+    <h1 mat-dialog-title>DETAIL NABÍDKY</h1>
+    <div class="header__close-button" (click)="exitDialog()">
+      <i class="fas fa-times"></i>
+    </div>
+  </div>
+  <div mat-dialog-content class="content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%">
+    <div fxFlex="1 0 80%" class="content__big-image"
+      [style.background-image]="'url(' + imagesList[selectedImage] + ')'"></div>
+    <div fxFlex="1 0 18%" class="content__container" fxLayout="row">
+      <ng-container *ngFor="let image of imagesList; let i = index">
+        <div class="content__small-image" [class.content__small-image--selected]="i === selectedImage"
+          [style.background-image]="'url(' + image + ')'" (click)="setSelectedImage(i)">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

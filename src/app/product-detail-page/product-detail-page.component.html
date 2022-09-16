@@ -18,6 +18,7 @@
         >
           <img
             *ngFor="let image of product.images; let i = index"
+            [class.image-list--selected]="selectedImage === i"
             width="150"
             loading="lazy"
             [src]="image"
@@ -30,6 +31,7 @@
           [style.background-image]="
             'url(' + product.images[selectedImage] + ')'
           "
+          (click)="openDetailPreviewDialog()"
         ></div>
         <ng-container *ngIf="useMobileView" [ngTemplateOutlet]="productTitle">
         </ng-container>
@@ -204,7 +206,7 @@
               class="black"
               (click)="sendMessage()"
             >
-              Poslat <i class="fas fa-paper-plane"></i>
+              POSLAT <i class="fas fa-paper-plane"></i>
             </button>
           </mat-card>
         </div>

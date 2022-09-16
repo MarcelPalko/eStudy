@@ -172,7 +172,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         username: this.form.value.username,
         email: this.form.value.email.toLocaleLowerCase(),
         password: this.form.value.password,
-        class: this.form.value?.class.length > 0 ? this.form.value.class : null,
+        class: this.form.value?.class?.length > 0 ? this.form.value.class : '',
       };
 
       this.authService
@@ -182,6 +182,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
           if (user) {
             this.form.reset();
             this.form = new FormGroup(LOGIN_FORM);
+            this.authService.setUser(user);
             this.router.navigate(['/products']);
           }
         });

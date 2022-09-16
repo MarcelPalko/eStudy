@@ -1,0 +1,63 @@
+.dialog {
+  height: 100%;
+}
+
+.header {
+  padding: 24px;
+  background-color: #000;
+  color: #fff;
+
+  &__close-button {
+    cursor: pointer;
+    font-size: 25px;
+  }
+}
+
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  background-color: #e6e6e6;
+  overflow: hidden;
+
+  &__container {
+    max-width: 100%;
+    gap: 25px;
+    overflow-x: auto;
+  }
+
+  &__big-image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: top;
+    min-width: 90%;
+  }
+
+  &__small-image {
+    min-width: 120px;
+    padding: 10px;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    cursor: pointer;
+
+    &--selected {
+      opacity: 0.4;
+    }
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  .content {
+    &__small-image {
+      min-width: 70px;
+    }
+  }
+
+}

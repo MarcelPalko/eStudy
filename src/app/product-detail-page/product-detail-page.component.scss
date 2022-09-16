@@ -18,6 +18,10 @@
   cursor: pointer;
   max-width: 350px;
 
+  &--selected {
+    opacity: 0.4;
+  }
+
   &--loading div {
     width: 200px;
     height: 150px;
@@ -28,6 +32,7 @@
 }
 
 .big-image {
+  cursor: zoom-in;
   width: 100%;
   max-height: 400px;
 
@@ -50,14 +55,14 @@
   &--loading {
     margin-bottom: 10px;
 
-    & > div:first-child {
+    &>div:first-child {
       height: 40px;
       width: 70%;
       background-color: #e6e6e6;
       animation: pulse 1s infinite ease-in-out;
     }
 
-    & > div:nth-child(2) {
+    &>div:nth-child(2) {
       div {
         height: 30px;
         width: 60px;
@@ -121,13 +126,13 @@
 
   background-color: #fff;
 
-  & > * {
+  &>* {
     position: relative;
     cursor: pointer;
   }
 }
 
-.users-chat + .scroll-bottom-button {
+.users-chat+.scroll-bottom-button {
   top: 70px;
 }
 
@@ -236,7 +241,7 @@
     word-break: break-word;
     background-color: #fff;
 
-    & + small {
+    &+small {
       margin-left: 5px;
     }
   }
@@ -295,12 +300,12 @@
   .body {
     padding: 20px;
 
-    & > div:first-child {
+    &>div:first-child {
       width: 100%;
       overflow: hidden;
     }
 
-    & > div:nth-child(2) {
+    &>div:nth-child(2) {
       width: 100%;
     }
   }
@@ -317,14 +322,14 @@
     &--loading {
       margin-bottom: 10px;
 
-      & > div:first-child {
+      &>div:first-child {
         height: 30px;
         width: 100%;
         background-color: #e6e6e6;
         animation: pulse 1s infinite ease-in-out;
       }
 
-      & > div:nth-child(2) {
+      &>div:nth-child(2) {
         div {
           height: 30px;
           width: 60px;
@@ -376,9 +381,11 @@
   0% {
     background-color: rgba(165, 165, 165, 0.1);
   }
+
   50% {
     background-color: rgba(165, 165, 165, 0.2);
   }
+
   100% {
     background-color: rgba(165, 165, 165, 0.1);
   }

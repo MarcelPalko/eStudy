@@ -141,7 +141,7 @@
       >
         <ng-container *ngIf="isLogin">
           <button mat-flat-button (click)="doActionBasedOnRoute()">
-            Přihlásit
+            PŘIHLÁSIT
           </button>
           <div class="button-divider">Nebo</div>
         </ng-container>
@@ -151,7 +151,7 @@
           [disabled]="!isLogin && form.invalid"
           (click)="doActionBasedOnRoute(isLogin)"
         >
-          Registrovat
+          REGISTROVAT
         </button>
         <ng-container *ngIf="!isLogin">
           <div class="return-link">

@@ -11,9 +11,11 @@
 
   <estudy-ui-header
     [form]="form"
+    [randomPlaceholder]="randomProductName"
     (loggedOut)="loggedOut($event)"
     (createdProduct)="createdProduct($event)"
-    [ngStyle]="{ top: showMenu ? '0px' : '-205px' }"
+    [ngStyle]="{ top: showMenu ? '0px' : useMobileView ? '-135px' : '-73px' }"
+    [class.transition-collapse]="!showMenu"
   ></estudy-ui-header>
   <div
     class="content"
@@ -54,12 +56,12 @@
           </mat-chip>
           <button
             mat-flat-button
-            (menuOpened)="menuOpened()"
-            (menuClosed)="menuClosed()"
+            (menuOpened)="focusOnSearchField()"
+            (menuClosed)="clearCategorySearchField()"
             [matMenuTriggerFor]="menu"
             class="black"
           >
-            Zobrazit více
+            ZOBRAZIT VÍCE
           </button>
           <button
             *ngIf="activeFilters.category.length > 0"
@@ -97,20 +99,34 @@
           fxLayoutAlign.xs="space-between center"
           fxLayoutGap="30px"
         >
-          <div
-            fxFlex.xs="0 0 45%"
-            fxLayout="row"
-            fxLayoutAlign="start center"
-            fxLayoutAlign.xs="center center"
-            class="filters__sort"
-            (click)="toggleSort()"
-          >
-            Datum vložení:
-            <i class="fas fa-long-arrow-alt-up" [@rotate]="sortBy"></i>
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+            <div *ngIf="!useMobileView">ŘADIT PODLE</div>
+            <mat-chip
+              disableRipple
+              fxFlex.xs="0 1 100%"
+              fxLayout="row"
+              fxLayoutAlign="start center"
+              fxLayoutAlign.xs="center center"
+              class="filters__sort"
+              (click)="toggleSort()"
+              [matTooltip]="sortBy === 'HIGH' ? 'Nejnovější' : 'Nejstarší'"
+              matTooltipPosition="above"
+            >
+              DATUM VLOŽENÍ:&nbsp;
+              <i
+                *ngIf="sortBy === 'LOW'"
+                class="fas fa-sort-amount-down-alt"
+              ></i>
+              <i
+                *ngIf="sortBy === 'HIGH'"
+                class="fas fa-sort-amount-up-alt"
+              ></i>
+            </mat-chip>
           </div>
+
           <div fxFlex.xs="0 0 50%" class="filters__items-count">
             <div>
-              Zobrazeno <b>{{ countOfShowedProducts }}</b> produktů
+              ZOBRAZENO <b>{{ countOfShowedProducts }}</b> PRODUKTŮ
             </div>
           </div>
         </div>
@@ -145,7 +161,7 @@
                 (load)="onImageLoad($event, i)"
               />
               <ng-container
-                *ngIf="!product?.loaded"
+                *ngIf="!product?.loaded || (!product.loaded && loadMore)"
                 [ngTemplateOutlet]="imageRendering"
               ></ng-container>
               <div
@@ -190,7 +206,7 @@
                     : product.title
                 }}
               </div>
-              <div>{{ product.createdAt | date: "shortDate" }}</div>
+              <div>{{ product.createdAt | date: "dd/MM/yyyy" }}</div>
               <div
                 class="card__categories"
                 fxLayout="column"

@@ -5,7 +5,7 @@ import { trigger, style, transition, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 
 import { ReplaySubject, of, combineLatest } from 'rxjs';
-import { takeUntil, switchMap, delay } from 'rxjs/operators';
+import { takeUntil, switchMap, delay, map, tap } from 'rxjs/operators';
 
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
@@ -105,12 +105,11 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     const userId = new HttpParams().set('userId', this.user._id);
     this.productService
       .getProducts(userId)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe((products) => {
-        if (products?.length > 0) {
-          this.uploadedProducts = products;
-        }
-      });
+      .pipe(
+        map((products) => (this.uploadedProducts = products || [])),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe();
   }
 
   tabChanged(selectedIndex) {
@@ -144,7 +143,9 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   }
 
   checkEmail(event): void {
-    this.checkFromProperties(event, 'email');
+    if (this.form.controls.email.valid) {
+      this.checkFromProperties(event, 'email');
+    }
   }
 
   checkOldPassword(event) {
@@ -165,18 +166,14 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
               );
             }
           }),
+          tap((isOldPasswordCorrect) => {
+            this.checkedProperties['oldPassword'] = isOldPasswordCorrect;
+            this.form['controls']['oldPassword'].setErrors(null);
+            this.isCheckingProperties['oldPassword'] = false;
+          }),
           takeUntil(this.unsubscribe)
         )
-        .subscribe((isOldPasswordCorrect) => {
-          if (isOldPasswordCorrect) {
-            this.checkedProperties['oldPassword'] = true;
-            this.form['controls']['oldPassword'].setErrors(null);
-          } else {
-            this.checkedProperties['oldPassword'] = false;
-          }
-
-          this.isCheckingProperties['oldPassword'] = false;
-        });
+        .subscribe();
     }
   }
 
@@ -200,28 +197,25 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
               return this.userService.getUsers(propertyParam);
             }
           }),
+          tap((foundUsers) => {
+            this.checkedProperties[property] = foundUsers.length === 0;
+            this.form['controls'][property].setErrors(null);
+            this.isCheckingProperties[property] = false;
+          }),
           takeUntil(this.unsubscribe)
         )
-        .subscribe((foundUsers) => {
-          if (foundUsers?.length === 0) {
-            this.checkedProperties[property] = true;
-            this.form['controls'][property].setErrors(null);
-          } else {
-            this.checkedProperties[property] = false;
-          }
-
-          this.isCheckingProperties[property] = false;
-        });
+        .subscribe();
     }
   }
 
   deleteProduct(index: number) {
     this.productService
       .deleteProduct(this.uploadedProducts[index]._id)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        this.uploadedProducts.splice(index, 1);
-      });
+      .pipe(
+        tap(() => this.uploadedProducts.splice(index, 1)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe();
   }
 
   editProduct(index: number) {

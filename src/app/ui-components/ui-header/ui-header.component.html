@@ -21,11 +21,11 @@
           [class.glowAnimation]="glowUpAddButton"
           (click)="createItem()"
         >
-          Přidat <i class="fas fa-plus"></i>
+          PŘIDAT <i class="fas fa-plus"></i>
         </button>
       </ng-container>
-      <a
-        ><i class="far fa-user"></i>
+      <a class="profile-wrap"
+        ><i class="far fa-user profile-wrap"></i>
         <div
           class="header__user-dialog"
           [class.header__user-dialog-spacer]="loggedUser"
@@ -51,10 +51,10 @@
               fxLayoutGap="20px"
             >
               <button mat-flat-button class="white" (click)="editProfile()">
-                Detail profilu
+                DETAIL PROFILU
               </button>
               <button mat-flat-button color="primary" (click)="logoutUser()">
-                Odhlásit se
+                ODHLÁSIT SE
               </button>
             </div>
           </ng-container>
@@ -126,7 +126,7 @@
   <div>&nbsp;</div>
   <h2>Nejste přihlášeni!</h2>
   <button mat-flat-button color="primary" (click)="redirectToLogin()">
-    Přihlásit se
+    PŘIHLÁSIT SE
   </button>
 </ng-template>
 
@@ -143,6 +143,11 @@
       <input
         formControlName="search"
         maxlength="70"
+        [placeholder]="
+          !inputIsExpanded && randomPlaceholder
+            ? randomPlaceholder.substring(0, 15) + '...'
+            : randomPlaceholder
+        "
         (focus)="toggleExpandInput()"
         (focusout)="toggleExpandInput()"
         [className]="

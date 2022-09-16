@@ -9,7 +9,11 @@ estudy-ui-header {
   position: fixed;
   width: 100%;
   z-index: 999;
-  transition: top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: top 320ms ease-in;
+}
+
+.transition-collapse {
+  transition: top 250ms linear !important;
 }
 
 .content {
@@ -236,8 +240,8 @@ estudy-ui-header {
   &__sort {
     cursor: pointer;
     padding: 7px 10px;
-    border: 1px solid;
     border-radius: 3px;
+    background-color: #fff;
 
     i {
       margin-left: 5px;
@@ -363,6 +367,10 @@ estudy-ui-header {
   .content {
     padding-top: 135px;
   }
+
+  .filters__sort {
+    min-height: 45px !important;
+  }
 }
 
 @media only screen and (max-width: 599px) {
@@ -466,8 +474,8 @@ estudy-ui-header {
     }
 
     &__sort {
-      margin-right: 0 !important;
       padding: 7px 10px;
+      min-height: 45px !important;
     }
 
     &__items-count {

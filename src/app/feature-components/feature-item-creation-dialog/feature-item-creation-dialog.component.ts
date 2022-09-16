@@ -15,7 +15,7 @@ import {
   state,
 } from '@angular/animations';
 import { of, ReplaySubject } from 'rxjs';
-import { switchMap, takeUntil, map } from 'rxjs/operators';
+import { switchMap, takeUntil, map, tap } from 'rxjs/operators';
 import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { Product } from 'src/app/types/product';
@@ -91,11 +91,13 @@ export class FeatureItemCreationDialogComponent implements OnInit, OnDestroy {
             )
           )
         ),
+        tap(
+          (categories: string[]) =>
+            (this.allCategories = [...new Set(categories)])
+        ),
         takeUntil(this.unsubscribe)
       )
-      .subscribe((categories: string[]) => {
-        this.allCategories = [...new Set(categories)];
-      });
+      .subscribe();
 
     // #NOTE - Possible memory leak !
     setTimeout(() => {
@@ -174,7 +176,7 @@ export class FeatureItemCreationDialogComponent implements OnInit, OnDestroy {
       newProduct.append('userId', this.authService.getUser()._id);
 
       this.categories.forEach((category) =>
-        newProduct.append('categories', category)
+        newProduct.append('categories', category.trim())
       );
       this.images.forEach((image) =>
         newProduct.append('images', image.data, image.data.filename)

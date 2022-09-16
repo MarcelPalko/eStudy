@@ -222,7 +222,7 @@
                 class="black"
                 (click)="hidePasswordForm()"
               >
-                Ponechat heslo
+                PONECHAT HESLO
               </button>
             </ng-container>
             <button
@@ -231,7 +231,7 @@
               [disabled]="form.invalid || form.pristine || isUpdating"
               (click)="onSubmit()"
             >
-              <div *ngIf="!isUpdating">Uložit</div>
+              <div *ngIf="!isUpdating">ULOŽIT</div>
               <i *ngIf="isUpdating" class="fas fa-spinner fa-spin"></i>
             </button>
           </div>
@@ -294,7 +294,7 @@
 
 <ng-template #toggleForm>
   <button mat-flat-button class="black" (click)="showPasswordForm()">
-    Změnit heslo
+    ZMĚNIT HESLO
   </button>
 </ng-template>
 

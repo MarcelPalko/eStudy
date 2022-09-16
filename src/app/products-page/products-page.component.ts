@@ -17,7 +17,7 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 
 /** RXJS */
-import { combineLatest, interval, of, ReplaySubject } from 'rxjs';
+import { combineLatest, interval, of, ReplaySubject, Subject } from 'rxjs';
 import {
   takeUntil,
   delay,
@@ -25,7 +25,7 @@ import {
   switchMap,
   mergeMap,
   map,
-  skipWhile,
+  debounceTime,
 } from 'rxjs/operators';
 
 /** Types */
@@ -70,17 +70,12 @@ const ITEMS_COUNT_IN_ROW_BY_RESOLUTION = {
     trigger('fadeOut', [
       transition(':enter', [
         style({ opacity: 0 }),
-        animate('320ms 150ms ease-out', style({ opacity: 1 })),
+        animate('320ms 150ms ease-in-out', style({ opacity: 1 })),
       ]),
       transition(':leave', [
         style({ opacity: 1 }),
-        animate('280ms 150ms ease-in', style({ opacity: 0 })),
+        animate('280ms 150ms ease-in-out', style({ opacity: 0 })),
       ]),
-    ]),
-    trigger('rotate', [
-      state('LOW', style({ transform: 'rotate(0)' })),
-      state('HIGH', style({ transform: 'rotate(180deg)' })),
-      transition('open <=> closed', [animate('250ms')]),
     ]),
     trigger('fadeOutContainer', [
       transition(':leave', [
@@ -99,14 +94,25 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   onWindowScroll(event) {
     const actualPosition = event.scrollTop;
     const max = event.offsetHeight;
-
-    this.showMenu =
-      this.previousPosition > actualPosition - 2 && !this.loadMore;
+    const isFullyScrolled =
+      event.scrollHeight - actualPosition === event.clientHeight;
 
     if (actualPosition === 0) {
       this.showMenu = true;
       this.showScrollButton = false;
+
+      return;
     }
+
+    if (isFullyScrolled) {
+      this.showMenu = true;
+      this.showScrollButton = true;
+
+      return;
+    }
+
+    this.showMenu =
+      this.previousPosition > actualPosition - 2 && !this.loadMore;
 
     if (
       this.previousPosition <= actualPosition &&
@@ -157,6 +163,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   private previousPosition: number = 0;
   private INTRO_DELAY_TIMER: number = 0;
 
+  public randomProductName = '';
+
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.useMobileView = event.target.innerWidth <= 1024;
@@ -180,8 +188,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       products = this.products.filter((product) =>
         activeCategories.some((category) =>
           product.categories
-            .map((pCat) => pCat.toLocaleLowerCase())
-            .includes(category.toLocaleLowerCase())
+            .map((pCat) => pCat.toLocaleLowerCase().trim())
+            .includes(category.toLocaleLowerCase().trim())
         )
       );
     }
@@ -223,6 +231,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   private unsubscribe: ReplaySubject<void> = new ReplaySubject<void>();
   private refresh: ReplaySubject<void> = new ReplaySubject<void>();
+  private _updateProductBuffer: Subject<Product> = new Subject<Product>();
 
   constructor(
     private router: Router,
@@ -234,7 +243,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loggedUser = this.authService.getUser() || null;
+    this.loggedUser = this.authService.getUser();
     const idParam = `_id=${this.loggedUser?._id}`;
 
     if (!sessionStorage.getItem('alreadyVisited')) {
@@ -245,85 +254,54 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.refresh.next();
     this.refresh
       .pipe(
-        //skipWhile(() => true),
         delay(this.INTRO_DELAY_TIMER),
         tap(() => (this.showIntroContainer = false)),
-        switchMap(() =>
+        mergeMap(() =>
           combineLatest([
-            this.productService.getProducts(),
             this.productService.getLastChange(),
+            this.productService.getProducts(),
+
+            // Call user to internally save User to localStorage
             this.loggedUser ? this.userService.getUsers(idParam) : of(null),
           ])
         ),
-        map(([products, dbInformation, users]) => {
+        map(([dbInformation, products]) => {
           this.lastChange = dbInformation.productsLastChange;
-
-          if (users) {
-            this.authService.removeUser();
-            this.authService.setUser(users[0]);
-            this.userService.userPropertiesChanged$.next(users[0]);
-          }
 
           return products || [];
         }),
+        tap((products) => (this.products = products)),
+        tap(() => (this.useMobileView = window.innerWidth <= 1024)),
         takeUntil(this.unsubscribe)
       )
       .subscribe((products) => {
-        this.useMobileView = window.innerWidth <= 1024;
+        if (products.length > 0) {
+          const _randomIndexInRange = Math.floor(
+            Math.random() * products.length
+          );
+          this.randomProductName = products[_randomIndexInRange]['title'];
 
-        if (products?.length > 0) {
           if (this.loggedUser) {
             this.favouriteProducts = [...this.loggedUser.favouriteProducts];
 
             this.favouriteProducts.forEach((product) => {
-              this.products = this.products.map((item) => {
-                if (item._id === product._id) {
-                  return { ...item, isFavourite: true };
-                } else {
-                  return item;
-                }
-              });
+              const favouriteProductIndex = this.products.findIndex(
+                (item) => item._id === product._id
+              );
+
+              if (favouriteProductIndex >= 0) {
+                this.products[favouriteProductIndex]['isFavourite'] = true;
+              }
             });
           }
-
-          this.products = products.map((item) => {
-            const favourite =
-              this.favouriteProducts.findIndex(
-                (favItem) => favItem._id === item._id
-              ) >= 0
-                ? true
-                : false;
-
-            return { ...item, isFavourite: favourite };
-          });
 
           this.countOfShowedProducts =
             products.length > this.itemsCountOnLoad()
               ? this.itemsCountOnLoad()
               : products.length;
+
+          this._setCategoriesByFreq();
         }
-
-        let categoriesWithFreq = [];
-        const arrayCategories: string[] = [].concat.apply(
-          [],
-          this.products.map((product) =>
-            product.categories.map((category) => category.trim())
-          )
-        );
-
-        [...new Set(arrayCategories)].forEach((cat) => {
-          categoriesWithFreq.push({
-            key: cat,
-            count: arrayCategories.filter((item) => item === cat).length,
-          });
-        });
-        categoriesWithFreq.sort((a, b) => b.count - a.count);
-
-        this.categories = [
-          ...categoriesWithFreq.map((i) =>
-            arrayCategories.find((j) => j === i.key)
-          ),
-        ];
 
         this.loaded = true;
       });
@@ -333,6 +311,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       .subscribe((change) => {
         if (change) {
           this.countOfShowedProducts = this.allProducts.length;
+
+          if (this.showMenu) {
+            this.scrollTop();
+          }
         }
       });
 
@@ -351,6 +333,19 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
           this.aplicationNeedReload = true;
         }
       });
+
+    this._updateProductBuffer
+      .pipe(
+        debounceTime(250),
+        switchMap(() => {
+          return this.userService.patchUser(this.loggedUser._id, {
+            favouriteProducts: [...this.favouriteProducts],
+          });
+        }),
+        tap((user) => (this.loggedUser = user)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe();
   }
 
   getStatus(productStatus: string) {
@@ -383,6 +378,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   toggleActiveCategory(category: string): void {
+    category = category.trim();
+
     if (!this.activeFilters.category.includes(category)) {
       this.activeFilters.category += `${category}|`;
     } else {
@@ -408,19 +405,40 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.showMoreProducts(true);
   }
 
-  menuOpened() {
-    /** This is not a good practise cuz we break angular-lifecycle => #Refactor */
-    setTimeout(() => {
-      this.categorySearchElement.nativeElement.focus();
-    }, 0);
+  focusOnSearchField() {
+    this.categorySearchElement.nativeElement.focus();
   }
 
-  menuClosed() {
+  clearCategorySearchField() {
     this.categorySearch.setValue('');
   }
 
   toggleSort(): void {
     this.sortBy = this.sortBy === 'LOW' ? 'HIGH' : 'LOW';
+  }
+
+  private _setCategoriesByFreq() {
+    let categoriesWithFreq = [];
+    const arrayCategories: string[] = [].concat.apply(
+      [],
+      this.products.map((product) =>
+        product.categories.map((category) => category.trim())
+      )
+    );
+
+    [...new Set(arrayCategories)].forEach((cat) => {
+      categoriesWithFreq.push({
+        key: cat,
+        count: arrayCategories.filter((item) => item === cat).length,
+      });
+    });
+    categoriesWithFreq.sort((a, b) => b.count - a.count);
+
+    this.categories = [
+      ...categoriesWithFreq.map((i) =>
+        arrayCategories.find((j) => j === i.key)
+      ),
+    ];
   }
 
   toggleFavourite(product: Product): void {
@@ -438,22 +456,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
         this.favouriteProducts.push(product);
       }
 
-      this.userService
-        .patchUser(this.loggedUser._id, {
-          favouriteProducts: [...this.favouriteProducts],
-        })
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe((user) => {
-          if (user) this.loggedUser = user;
-        });
-
-      this.loggedUser = {
-        ...this.loggedUser,
-        favouriteProducts: [...this.favouriteProducts],
-      };
-      this.userService.userPropertiesChanged$.next(this.loggedUser);
-      this.authService.removeUser();
-      this.authService.setUser(this.loggedUser);
+      this._updateProductBuffer.next(product);
     }
   }
 

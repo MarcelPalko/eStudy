@@ -90,7 +90,9 @@ export class AuthService {
   }
 
   public getUser() {
-    return JSON.parse(localStorage.getItem(this.USER_KEY));
+    const user = localStorage.getItem(this.USER_KEY);
+
+    return user ? JSON.parse(user) : null;
   }
 
   public removeUser() {

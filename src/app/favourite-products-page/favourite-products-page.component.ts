@@ -6,15 +6,8 @@ import { trigger, style, transition, animate } from '@angular/animations';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 
-import { Observable, of, ReplaySubject, timer } from 'rxjs';
-import {
-  mergeMap,
-  takeUntil,
-  delay,
-  filter,
-  take,
-  skipWhile,
-} from 'rxjs/operators';
+import { of, ReplaySubject, timer } from 'rxjs';
+import { mergeMap, takeUntil, delay, filter, tap } from 'rxjs/operators';
 import { User } from '../types/user';
 import { Product } from '../types/product';
 
@@ -65,19 +58,16 @@ export class FavouriteProductsPageComponent implements OnInit, OnDestroy {
         this.authService.setUser(user[0]);
       });
 
-    /** Possible memory leak */
     this.router.events
       .pipe(
         filter(
           (event) =>
             event instanceof NavigationStart && !event.url.includes('favourite')
-        )
+        ),
+        tap(() => this.removeProducts()),
+        takeUntil(this.unsubscribe)
       )
-      .subscribe((redirect) => {
-        if (redirect) {
-          this.removeProducts();
-        }
-      });
+      .subscribe();
   }
 
   removeProduct(index: number) {
@@ -113,6 +103,7 @@ export class FavouriteProductsPageComponent implements OnInit, OnDestroy {
   removeProducts() {
     this.userService
       .patchUser(this.user._id, { ...this.user })
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe((user) => {
         this.user = user;
         this.authService.setUser(user);

@@ -14,7 +14,6 @@ import { ProductService } from '../services/product.service';
 import { HttpParams } from '@angular/common/http';
 import {
   takeUntil,
-  delay,
   mergeMap,
   map,
   skipWhile,
@@ -30,6 +29,7 @@ import { FormControl } from '@angular/forms';
 import { animate, trigger, transition, style } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FeatureItemCreationDialogComponent } from '../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
+import { UiProductDetailImagesDialogComponent } from '../ui-components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.component';
 
 @Component({
   selector: 'estudy-product-detail-page',
@@ -340,6 +340,10 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.loggedUser._id === this.author._id && this.chats.length <= 0) {
+      return;
+    }
+
     const sentForChat =
       this.chats.length > 0 ? this.chats[this.activeChat] : null;
     let message = {
@@ -386,6 +390,16 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
         this.loaded = true;
       }
     }
+  }
+
+  public openDetailPreviewDialog() {
+    const images = [this.product.images[this.selectedImage], ...this.product.images.filter((b, index) => index !== this.selectedImage)];
+
+    const dialogRef = this.dialog.open(UiProductDetailImagesDialogComponent, {
+      height: '90vh',
+      width: '90vw',
+      data: images
+    });
   }
 
   ngOnDestroy(): void {

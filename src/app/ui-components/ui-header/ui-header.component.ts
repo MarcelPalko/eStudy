@@ -42,6 +42,7 @@ import { takeUntil } from 'rxjs/operators';
 export class UiHeaderComponent implements OnInit, OnDestroy {
   @Input() form: FormGroup = null;
   @Input() glowUpAddButton: boolean = false;
+  @Input() randomPlaceholder: string = '';
 
   @Output() loggedOut = new EventEmitter<boolean>();
   @Output() createdProduct = new EventEmitter<boolean>();
