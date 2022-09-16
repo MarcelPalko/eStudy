@@ -16,9 +16,9 @@ import {
 } from '@angular/animations';
 import { of, ReplaySubject } from 'rxjs';
 import { switchMap, takeUntil, map, tap } from 'rxjs/operators';
-import { ProductService } from '../../services/product.service';
-import { AuthService } from '../../services/auth.service';
-import { Product } from 'src/app/types/product';
+import { ProductService } from '../../shared/services/product.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { Product } from 'src/app/shared/types/product';
 
 @Component({
   selector: 'estudy-feature-item-creation-dialog',

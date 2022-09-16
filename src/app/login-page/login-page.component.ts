@@ -3,11 +3,11 @@ import { HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { passwordMatcherValidator } from '../validators/password.validator';
-import { AuthService } from '../services/auth.service';
+import { passwordMatcherValidator } from '../shared/validators/password.validator';
+import { AuthService } from '../shared/services/auth.service';
 import { ReplaySubject, of } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
-import { UserService } from '../services/user.service';
+import { UserService } from '../shared/services/user.service';
 
 const REGISTER_FORM: { [key: string]: FormControl } = {
   ['username']: new FormControl('', [

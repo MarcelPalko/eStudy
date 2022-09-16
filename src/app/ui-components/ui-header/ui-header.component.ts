@@ -19,12 +19,12 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ReplaySubject } from 'rxjs';
 
-import { Product } from '../../types/product';
-import { User } from 'src/app/types/user';
-import { Notification, ICON_BY_TYPES } from 'src/app/types/notification';
-import { AuthService } from 'src/app/services/auth.service';
-import { FeatureItemCreationDialogComponent } from 'src/app/feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
-import { UserService } from 'src/app/services/user.service';
+import { Product } from '../../shared/types/product';
+import { User } from '../../shared/types/user';
+import { Notification, ICON_BY_TYPES } from '../../shared/types/notification';
+import { AuthService } from '../../shared/services/auth.service';
+import { FeatureItemCreationDialogComponent } from '../../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
+import { UserService } from '../../shared/services/user.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({

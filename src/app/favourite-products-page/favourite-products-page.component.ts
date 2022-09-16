@@ -3,13 +3,13 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { trigger, style, transition, animate } from '@angular/animations';
 
-import { AuthService } from '../services/auth.service';
-import { UserService } from '../services/user.service';
+import { AuthService } from '../shared/services/auth.service';
+import { UserService } from '../shared/services/user.service';
 
 import { of, ReplaySubject, timer } from 'rxjs';
 import { mergeMap, takeUntil, delay, filter, tap } from 'rxjs/operators';
-import { User } from '../types/user';
-import { Product } from '../types/product';
+import { User } from '../shared/types/user';
+import { Product } from '../shared/types/product';
 
 @Component({
   selector: 'estudy-favourite-products-page',

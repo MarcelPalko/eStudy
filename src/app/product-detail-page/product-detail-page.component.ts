@@ -9,8 +9,8 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 
 /** Types */
-import { Product, STATUSES } from '../types/product';
-import { ProductService } from '../services/product.service';
+import { Product, STATUSES } from '../shared/types/product';
+import { ProductService } from '../shared/services/product.service';
 import { HttpParams } from '@angular/common/http';
 import {
   takeUntil,
@@ -20,11 +20,11 @@ import {
   catchError,
 } from 'rxjs/operators';
 import { combineLatest, of, ReplaySubject, interval, Observable } from 'rxjs';
-import { UserService } from '../services/user.service';
-import { User } from '../types/user';
-import { AuthService } from '../services/auth.service';
-import { Chat } from '../types/chat';
-import { ChatService } from '../services/chat.service';
+import { UserService } from '../shared/services/user.service';
+import { User } from '../shared/types/user';
+import { AuthService } from '../shared/services/auth.service';
+import { Chat } from '../shared/types/chat';
+import { ChatService } from '../shared/services/chat.service';
 import { FormControl } from '@angular/forms';
 import { animate, trigger, transition, style } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';

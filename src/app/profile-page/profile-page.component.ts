@@ -7,12 +7,12 @@ import { Router } from '@angular/router';
 import { ReplaySubject, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, delay, map, tap } from 'rxjs/operators';
 
-import { AuthService } from '../services/auth.service';
-import { UserService } from '../services/user.service';
-import { User } from '../types/user';
-import { passwordMatcherValidator } from '../validators/password.validator';
-import { Product } from '../types/product';
-import { ProductService } from '../services/product.service';
+import { AuthService } from '../shared/services/auth.service';
+import { UserService } from '../shared/services/user.service';
+import { User } from '../shared/types/user';
+import { passwordMatcherValidator } from '../shared/validators/password.validator';
+import { Product } from '../shared/types/product';
+import { ProductService } from '../shared/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FeatureItemCreationDialogComponent } from '../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
 

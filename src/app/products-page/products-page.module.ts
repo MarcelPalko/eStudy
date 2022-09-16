@@ -17,7 +17,7 @@ import { UiFooterModule } from '../ui-components/ui-footer/ui-footer.module';
 import { ProductsPageComponent } from './products-page.component';
 import { ProductDetailPageComponent } from '../product-detail-page/product-detail-page.component';
 import { FavouriteProductsPageComponent } from '../favourite-products-page/favourite-products-page.component';
-import { AuthGuard } from '../interceptors/aut.guard';
+import { AuthGuard } from '../shared/interceptors/aut.guard';
 import { UiProductDetailImagesDialogModule } from '../ui-components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.module';
 
 const routes: Routes = [

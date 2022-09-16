@@ -5,7 +5,7 @@
   fxLayoutGap="15px"
 >
   <button mat-flat-button>
-    <div class="footer__version">DEV 2.2</div>
+    <div class="footer__version" (click)="redirectToDevRepo()">DEV 2.2</div>
   </button>
   <div class="footer__title">
     &copy; {{ date | date: "yyyy" }}&nbsp;&nbsp;eStudy |

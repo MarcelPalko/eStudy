@@ -29,11 +29,11 @@ import {
 } from 'rxjs/operators';
 
 /** Types */
-import { Product, STATUSES } from '../types/product';
-import { User } from '../types/user';
-import { AuthService } from '../services/auth.service';
-import { UserService } from '../services/user.service';
-import { ProductService } from '../services/product.service';
+import { Product, STATUSES } from '../shared/types/product';
+import { User } from '../shared/types/user';
+import { AuthService } from '../shared/services/auth.service';
+import { UserService } from '../shared/services/user.service';
+import { ProductService } from '../shared/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FeatureItemCreationDialogComponent } from '../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
 
@@ -164,10 +164,12 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   private INTRO_DELAY_TIMER: number = 0;
 
   public randomProductName = '';
+  public productLineLength = 0;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.useMobileView = event.target.innerWidth <= 1024;
+    this.productLineLength = this.useMobileView ? 10 : 30;
   }
 
   get allProducts() {
@@ -271,7 +273,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
           return products || [];
         }),
         tap((products) => (this.products = products)),
-        tap(() => (this.useMobileView = window.innerWidth <= 1024)),
+        tap(() => {
+          this.useMobileView = window.innerWidth <= 1024;
+          this.productLineLength = this.useMobileView ? 10 : 25;
+        }),
         takeUntil(this.unsubscribe)
       )
       .subscribe((products) => {

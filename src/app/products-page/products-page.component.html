@@ -79,6 +79,7 @@
                 [formControl]="categorySearch"
                 (click)="$event.stopPropagation()"
                 (keypress)="$event.stopPropagation()"
+                placeholder="Název kategorie"
               />
               <div class="menu-content__categories">
                 <button
@@ -170,6 +171,7 @@
                 fxLayoutAlign="center center"
                 (click)="toggleFavourite(product)"
                 *ngIf="loggedUser && product.userId !== loggedUser?._id"
+                matTooltip="Přidat do seznamu oblíbených" matTooltipPosition="below"
               >
                 <i
                   [class]="
@@ -199,10 +201,10 @@
                   "
                 ></i>
               </div>
-              <div>
+              <div [matTooltip]="product.title" matTooltipPosition="above">
                 {{
-                  useMobileView && product.title.length > 10
-                    ? product.title.slice(0, 10) + "..."
+                  product.title.length > productLineLength
+                    ? product.title.slice(0, productLineLength) + "..."
                     : product.title
                 }}
               </div>

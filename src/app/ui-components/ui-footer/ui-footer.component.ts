@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -6,14 +6,16 @@ import { Router } from '@angular/router';
   templateUrl: './ui-footer.component.html',
   styleUrls: ['./ui-footer.component.scss'],
 })
-export class UiFooterComponent implements OnInit {
-  date: Date = new Date();
+export class UiFooterComponent {
+  public date: Date = new Date();
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
-
-  redirectToAboutPage() {
+  public redirectToAboutPage() {
     this.router.navigate(['/about']);
+  }
+
+  public redirectToDevRepo() {
+    window.open('https://github.com/MarcelPalko/eStudy', '_blank');
   }
 }
