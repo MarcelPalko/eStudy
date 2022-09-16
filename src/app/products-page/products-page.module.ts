@@ -11,14 +11,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 
-import { UiHeaderModule } from '../ui-components/ui-header/ui-header.module';
-import { UiFooterModule } from '../ui-components/ui-footer/ui-footer.module';
+import { UiHeaderModule } from '../shared/components/ui-header/ui-header.module';
+import { UiFooterModule } from '../shared/components/ui-footer/ui-footer.module';
 
 import { ProductsPageComponent } from './products-page.component';
 import { ProductDetailPageComponent } from '../product-detail-page/product-detail-page.component';
 import { FavouriteProductsPageComponent } from '../favourite-products-page/favourite-products-page.component';
 import { AuthGuard } from '../shared/interceptors/aut.guard';
-import { UiProductDetailImagesDialogModule } from '../ui-components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.module';
+import { UiProductDetailImagesDialogModule } from '../shared/components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.module';
 
 const routes: Routes = [
   {

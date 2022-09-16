@@ -30,7 +30,7 @@ const routes: Routes = [
   {
     path: 'about',
     loadChildren: () =>
-      import('./ui-components/about-page/about-page.module').then(
+      import('./about-page/about-page.module').then(
         (m) => m.AboutPageModule
       ),
   },

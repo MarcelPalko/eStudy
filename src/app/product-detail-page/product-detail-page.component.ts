@@ -28,8 +28,8 @@ import { ChatService } from '../shared/services/chat.service';
 import { FormControl } from '@angular/forms';
 import { animate, trigger, transition, style } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
-import { FeatureItemCreationDialogComponent } from '../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
-import { UiProductDetailImagesDialogComponent } from '../ui-components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.component';
+import { FeatureItemCreationDialogComponent } from '../shared/components/feature-item-creation-dialog/feature-item-creation-dialog.component';
+import { UiProductDetailImagesDialogComponent } from '../shared/components/ui-product-detail-images-dialog/ui-product-detail-images-dialog.component';
 
 @Component({
   selector: 'estudy-product-detail-page',

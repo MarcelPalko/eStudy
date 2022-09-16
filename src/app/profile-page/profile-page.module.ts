@@ -10,8 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { UiHeaderModule } from '../ui-components/ui-header/ui-header.module';
-import { UiFooterModule } from '../ui-components/ui-footer/ui-footer.module';
+import { UiHeaderModule } from '../shared/components/ui-header/ui-header.module';
+import { UiFooterModule } from '../shared/components/ui-footer/ui-footer.module';
 import { ProfilePageComponent } from './profile-page.component';
 
 const routes: Routes = [{ path: '', component: ProfilePageComponent }];

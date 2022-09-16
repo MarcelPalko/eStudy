@@ -10,8 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-import { UiHeaderModule } from '../ui-components/ui-header/ui-header.module';
-import { UiFooterModule } from '../ui-components/ui-footer/ui-footer.module';
+import { UiHeaderModule } from '../shared/components/ui-header/ui-header.module';
+import { UiFooterModule } from '../shared/components/ui-footer/ui-footer.module';
 import { LoginPageComponent } from './login-page.component';
 
 const routes: Routes = [

@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
 import { UiHeaderComponent } from './ui-header.component';
-import { FeatureItemCreationDialogModule } from 'src/app/feature-components/feature-item-creation-dialog/feature-item-creation-dialog.module';
+import { FeatureItemCreationDialogModule } from '../feature-item-creation-dialog/feature-item-creation-dialog.module';
 
 @NgModule({
   declarations: [UiHeaderComponent],

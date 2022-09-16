@@ -14,7 +14,7 @@ import { passwordMatcherValidator } from '../shared/validators/password.validato
 import { Product } from '../shared/types/product';
 import { ProductService } from '../shared/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FeatureItemCreationDialogComponent } from '../feature-components/feature-item-creation-dialog/feature-item-creation-dialog.component';
+import { FeatureItemCreationDialogComponent } from '../shared/components/feature-item-creation-dialog/feature-item-creation-dialog.component';
 
 const PASSWORD_FORM: { [key: string]: FormControl } = {
   ['oldPassword']: new FormControl('', [

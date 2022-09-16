@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { trigger, style, transition, animate } from '@angular/animations';
 
