@@ -158,8 +158,8 @@
               <img
                 height="180px"
                 loading="lazy"
-                [src]="product.images[0]"
                 (load)="onImageLoad($event, i)"
+                #productImage
               />
               <ng-container
                 *ngIf="!product?.loaded || (!product.loaded && loadMore)"

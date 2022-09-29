@@ -3,8 +3,11 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
+  ViewChildren,
   ElementRef,
   HostListener,
+  QueryList,
+  AfterViewInit,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import {
@@ -28,7 +31,7 @@ import {
   debounceTime,
 } from 'rxjs/operators';
 
-/** Types */
+/** Types & Services */
 import { Product, STATUSES } from '../shared/types/product';
 import { User } from '../shared/types/user';
 import { AuthService } from '../shared/services/auth.service';
@@ -83,13 +86,19 @@ const ITEMS_COUNT_IN_ROW_BY_RESOLUTION = {
         animate('280ms 150ms ease-in', style({ opacity: 0 })),
       ]),
     ]),
+    trigger('expandBody', [
+      state('expand', style({ paddingBottom: '350px' })),
+      transition('expand => close', [animate('200ms ease-in')]),
+      transition('close => expand', [animate('150ms ease-out')]),
+    ]),
   ],
 })
-export class ProductsPageComponent implements OnInit, OnDestroy {
+export class ProductsPageComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('productsContainer') productsContainer: ElementRef;
   @ViewChild('viewContainer') viewContainer: ElementRef;
   @ViewChild('categorySearchElement', { static: false })
   categorySearchElement: ElementRef;
+  @ViewChildren('productImage') productImages: QueryList<ElementRef>;
 
   onWindowScroll(event) {
     const actualPosition = event.scrollTop;
@@ -104,21 +113,19 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (isFullyScrolled) {
-      this.showMenu = true;
-      this.showScrollButton = true;
-
-      return;
-    }
-
     this.showMenu =
       this.previousPosition > actualPosition - 2 && !this.loadMore;
 
+    if (isFullyScrolled) {
+      this.showMenu = true;
+    }
+
     if (
       this.previousPosition <= actualPosition &&
-      actualPosition > max - 800 &&
+      actualPosition <= max - 800 &&
       !this.loadMore
     ) {
+      console.log('LOAD MORE');
       this.loadMore = true;
       this.showScrollButton = true;
       this.showMoreProducts();
@@ -128,7 +135,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   private productIsClicked: boolean = true;
-  private loadMore: boolean = false;
+  loadMore: boolean = false;
   loaded: boolean = false;
   aplicationNeedReload: boolean = false;
   showScrollButton: boolean = false;
@@ -165,6 +172,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   public randomProductName = '';
   public productLineLength = 0;
+  public productImageLoading = '';
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -272,8 +280,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
           return products || [];
         }),
-        tap((products) => (this.products = products)),
-        tap(() => {
+        tap((products) => {
+          this.products = products;
+          this.products = this.sortProductsByDate();
+          this.productImageLoading = this.products[0]._id;
           this.useMobileView = window.innerWidth <= 1024;
           this.productLineLength = this.useMobileView ? 10 : 25;
         }),
@@ -348,6 +358,24 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
           });
         }),
         tap((user) => (this.loggedUser = user)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe();
+  }
+
+  ngAfterViewInit(): void {
+    this.productImages.changes
+      .pipe(
+        tap((queryList: QueryList<ElementRef>) => {
+          const startIndex = queryList
+            .toArray()
+            .findIndex((item) => item.nativeElement.src === '');
+
+          if (startIndex > -1) {
+            queryList.get(startIndex).nativeElement.src =
+              this.products[startIndex]['images'][0];
+          }
+        }),
         takeUntil(this.unsubscribe)
       )
       .subscribe();
@@ -469,8 +497,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
    * @param range Takes range for counter
    * @returns Array of numbers for HTML cycle for loop
    */
-  cycleFor(range: number): number[] {
-    return range > 0 ? Array(range).map((x, i) => i) : [];
+  cycleFor(range: number): {}[] {
+    return range > 0 ? Array(range).fill({}) : [];
   }
 
   itemsCountOnLoad() {
@@ -533,16 +561,15 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   showMoreProducts(startLoad?: boolean) {
-    setTimeout(() => {
-      this.countOfShowedProducts += startLoad
-        ? this.itemsCountOnLoad()
-        : this.claculateRestOfCards();
-      this.loadMore = false;
+    this.countOfShowedProducts += startLoad
+      ? this.itemsCountOnLoad()
+      : this.claculateRestOfCards();
 
-      if (this.countOfShowedProducts >= this.products.length) {
-        this.countOfShowedProducts = this.products.length;
-      }
-    }, 1000);
+    this.loadMore = false;
+
+    if (this.countOfShowedProducts >= this.products.length) {
+      this.countOfShowedProducts = this.products.length;
+    }
   }
 
   reloadPage() {
@@ -573,12 +600,23 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   onImageLoad(evt, index) {
-    if (evt && evt.target) {
+    if (evt && evt.target && !this.products[index]['loaded']) {
+      const nextProductId = Math.min(index + 1, this.products.length - 1);
+
       this.products[index]['loaded'] = true;
+
+      if (nextProductId < this.countOfShowedProducts) {
+        this.productImages.find(
+          (item, index) => index === nextProductId
+        ).nativeElement.src = this.products[index]['images'][0];
+      }
     }
   }
 
   ngOnDestroy(): void {
+    this._updateProductBuffer.complete();
+    this.refresh.complete();
+
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
