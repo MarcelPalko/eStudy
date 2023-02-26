@@ -28,19 +28,25 @@
       fxLayoutGap="30px"
     >
       <div class="body__creator-box" fxLayout="column" fxLayoutGap="10px">
-        <img src="../../../assets/imgs/me.jpg" width="350px" />
+        <img src="../../../assets/imgs/me.JPG" width="350px" />
         <h3>
           <b>Marcel Palko </b><br />
           Tvůrce aplikace
         </h3>
       </div>
 
-      <div fxLayout="column" class="body__creator__links" fxLayoutGap="30px">
-        <div fxLayout="row">
-          <a href="https://www.linkedin.com/in/marcelpalko/">LinkedIn</a>
-        </div>
-        <a href="https://github.com/MarcelPalko">Github repos</a>
-        <a href="https://linktr.ee/marcelpalko">Linktree</a>
+      <div class="body__creator__links" fxLayoutGap="30px">
+        <mat-chip-list>
+          <mat-basic-chip color="primary" class="chip">
+            <a href="https://www.linkedin.com/in/marcelpalko/">LinkedIn</a>
+          </mat-basic-chip>
+          <mat-basic-chip color="primary" class="chip">
+            <a href="https://github.com/MarcelPalko">Github repos</a>
+          </mat-basic-chip>
+          <mat-basic-chip color="primary" class="chip">
+            <a href="https://linktr.ee/marcelpalko">Linktree</a>
+          </mat-basic-chip>
+        </mat-chip-list>
       </div>
     </div>
   </div>

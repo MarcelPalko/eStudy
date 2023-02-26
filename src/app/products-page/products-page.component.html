@@ -12,6 +12,7 @@
   <estudy-ui-header
     [form]="form"
     [randomPlaceholder]="randomProductName"
+    [glowUpAddButton]="allProducts.length <= 0 && form['controls']['search'].value.length <= 0"
     (loggedOut)="loggedOut($event)"
     (createdProduct)="createdProduct($event)"
     [ngStyle]="{ top: showMenu ? '0px' : useMobileView ? '-135px' : '-73px' }"
@@ -55,6 +56,7 @@
             >{{ category }}
           </mat-chip>
           <button
+            *ngIf="categories.length <= DEFAULT_CATEGORIES_COUNT"
             mat-flat-button
             (menuOpened)="focusOnSearchField()"
             (menuClosed)="clearCategorySearchField()"
@@ -307,10 +309,16 @@
 </ng-template>
 
 <ng-template #itemsNotFound>
-  <h1 class="center-self" [@fadeIn]>
-    Položky s názvem <b>{{ form["controls"]["search"].value }}</b> nebyly
-    nalezeny
-  </h1>
+    <h1 class="center-self" [@fadeIn]>
+      <ng-container *ngIf="form['controls']['search'].value.length > 0">
+        Položky s názvem <b>{{ form['controls']['search'].value }}</b> nebyly
+        nalezeny
+      </ng-container>
+      <ng-container *ngIf="form['controls']['search'].value.length <= 0">
+        Zatím nebyly přidány žádné položky...<br />
+        Buďte první nabízející, pro přidání nového produktu klikněte na tlačítko <b>Přidat</b> v horní liště.
+      </ng-container>
+    </h1>
 </ng-template>
 
 <ng-template #filtersGhostLoading>

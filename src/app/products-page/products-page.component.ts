@@ -37,6 +37,7 @@ import { ProductService } from '../shared/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FeatureItemCreationDialogComponent } from '../shared/components/feature-item-creation-dialog/feature-item-creation-dialog.component';
 
+const DEFAULT_CATEGORIES_COUNT = 5;
 const ITEMS_COUNT_IN_ROW_BY_RESOLUTION = {
   3040: 13,
   2880: 10,
@@ -148,7 +149,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     search: '',
     category: '',
   };
-  activeCategoriesCount: number = 5;
+  activeCategoriesCount: number = DEFAULT_CATEGORIES_COUNT;
 
   sortBy: string = 'HIGH';
   lastChange: string = '';
